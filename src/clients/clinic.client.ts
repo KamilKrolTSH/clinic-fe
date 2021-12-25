@@ -1,4 +1,6 @@
 import * as axios from "axios";
+import { UserData } from "../types/user-data";
+import { UserDiagnose } from "../types/user-diagnose";
 
 interface Response {
   error?: string;
@@ -102,6 +104,44 @@ export class ClinicClient {
 
       if (error.response?.data?.error === "USER_EXISTS") {
         return { error: "USER_EXISTS" };
+      }
+
+      throw error;
+    }
+  }
+
+  async getUserData(): Promise<Return<undefined, UserData | undefined>> {
+    try {
+      const res = await this.instance.get<UserData>("UserData/");
+
+      return { content: res.data };
+    } catch (e) {
+      const error = e as axios.AxiosError;
+
+      if (error.response?.status === 404) {
+        return { content: undefined };
+      }
+
+      throw error;
+    }
+  }
+
+  async setUserData(userData: Omit<UserData, "id">) {
+    await this.instance.post<UserData>("UserData/", userData);
+  }
+
+  async getUserDiagnose(): Promise<
+    Return<undefined, UserDiagnose | undefined>
+  > {
+    try {
+      const res = await this.instance.get<UserDiagnose>("UserDiagnose/");
+
+      return { content: res.data };
+    } catch (e) {
+      const error = e as axios.AxiosError;
+
+      if (error.response?.status === 404) {
+        return { content: undefined };
       }
 
       throw error;

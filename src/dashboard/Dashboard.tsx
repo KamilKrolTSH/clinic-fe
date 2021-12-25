@@ -1,5 +1,8 @@
 import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
+import { ClinicClient } from "../clients/clinic.client";
+
+const clinicClient = new ClinicClient();
 
 const realNumberRegex = /^[0-9]{0,7}[.]?[0-9]{0,2}$/;
 const naturalRegex = /^[0-9]{0,7}$/;
@@ -25,12 +28,16 @@ const makeOnNaturalNumberXChange =
   };
 
 export function Dashboard() {
+  const [loading, setLoading] = useState<boolean>(true);
+  const [userDataFilled, setUserDataFilled] = useState<boolean>(false);
+  const [userDiagnose, setUserDiagnose] = useState<boolean | null>(null);
+
   const [submitDisabled, setSumbitDisabled] = useState<boolean>(true);
 
   const [pregnancies, setPregnancies] = useState<string>("");
   const [glucose, setGlucose] = useState<string>("");
   const [bloodPressure, setBloodPressure] = useState<string>("");
-  const [biabetesPedigreeFunction, setBiabetesPedigreeFunction] =
+  const [diabetesPedigreeFunction, setDiabetesPedigreeFunction] =
     useState<string>("");
   const [insulin, setInsulin] = useState<string>("");
   const [bmi, setBmi] = useState<string>("");
@@ -40,8 +47,8 @@ export function Dashboard() {
   const onPregnancesChange = makeOnNaturalNumberXChange(setPregnancies);
   const onGlucoseChange = makeOnRealNumberXChange(setGlucose);
   const onBloodPressureChange = makeOnRealNumberXChange(setBloodPressure);
-  const onBiabetesPedigreeFunctionChange = makeOnRealNumberXChange(
-    setBiabetesPedigreeFunction
+  const onDiabetesPedigreeFunctionChange = makeOnRealNumberXChange(
+    setDiabetesPedigreeFunction
   );
   const onInsulinChange = makeOnRealNumberXChange(setInsulin);
   const onBmiChange = makeOnRealNumberXChange(setBmi);
@@ -51,7 +58,7 @@ export function Dashboard() {
   const allFields = [
     glucose,
     bloodPressure,
-    biabetesPedigreeFunction,
+    diabetesPedigreeFunction,
     insulin,
     bmi,
     skinThickness,
@@ -65,9 +72,46 @@ export function Dashboard() {
     setSumbitDisabled(!allValid);
   }, allFields);
 
-  const onSubmitClick = () => {};
+  useEffect(() => {
+    init();
+  }, []);
 
-  return (
+  const init = async () => {
+    await loadUserData();
+    if (!userDataFilled) {
+      await loadUserDiagnose();
+    }
+
+    setLoading(false);
+  };
+
+  const loadUserData = async () => {
+    const userData = await clinicClient.getUserData();
+    setUserDataFilled(!!userData.content);
+  };
+
+  const loadUserDiagnose = async () => {
+    const userDiagnose = await clinicClient.getUserDiagnose();
+    setUserDiagnose(
+      typeof userDiagnose.content === "boolean" ? userDiagnose.content : null
+    );
+  };
+
+  const onSubmitClick = async () => {
+    setLoading(true);
+    await clinicClient.setUserData({
+      pregnancies: parseInt(pregnancies),
+      glucose: parseFloat(glucose),
+      bloodPressure: parseFloat(bloodPressure),
+      diabetesPedigreeFunction: parseFloat(diabetesPedigreeFunction),
+      insulin: parseFloat(insulin),
+      bmi: parseFloat(bmi),
+      age: parseInt(age),
+    });
+    await init();
+  };
+
+  const form = () => (
     <div className="Dashboard">
       <div className="Column">
         <TextField
@@ -107,8 +151,8 @@ export function Dashboard() {
           type="text"
           label="Diabetes Pedigree Function"
           variant="outlined"
-          value={biabetesPedigreeFunction}
-          onChange={onBiabetesPedigreeFunctionChange}
+          value={diabetesPedigreeFunction}
+          onChange={onDiabetesPedigreeFunctionChange}
         />
       </div>
       <div className="Column">
@@ -162,4 +206,19 @@ export function Dashboard() {
       </Button>
     </div>
   );
+
+  const inc = () => <div>Loading</div>;
+
+  const diagnose = () =>
+    typeof userDiagnose === "boolean" ? (
+      userDiagnose ? (
+        <div>You are diabetic</div>
+      ) : (
+        <div>You are NOT diabetic</div>
+      )
+    ) : (
+      <div>You are not diagnosed yet</div>
+    );
+
+  return loading ? inc() : userDataFilled ? diagnose() : form();
 }

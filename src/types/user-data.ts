@@ -7,4 +7,5 @@ export interface UserData {
   insulin: number;
   bmi: number;
   age: number;
+  skinThickness: number;
 }

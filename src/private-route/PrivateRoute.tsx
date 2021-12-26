@@ -1,7 +1,19 @@
 // A wrapper for <Route> that redirects to the login
 
 import { Redirect, Route } from "react-router";
-import { useAuthentication } from "../providers/AuthenticateProvider";
+import { useAuthentication, useRole } from "../providers/AuthenticateProvider";
+import { Role } from "../types/role";
+
+const redirectTo = ({ role, userRole }: { role: Role; userRole?: Role }) => {
+  switch (role) {
+    case Role.ADMIN: {
+      return userRole === Role.ADMIN ? null : "/dashboard";
+    }
+    case Role.USER: {
+      return userRole === Role.USER ? null : "/dashboard-admin";
+    }
+  }
+};
 
 // screen if you're not yet authenticated.
 export function PrivateRoute({
@@ -10,17 +22,28 @@ export function PrivateRoute({
 }: {
   children: any;
   path: string;
+  role: Role;
 }) {
   const authentication = useAuthentication();
+  const role = useRole();
 
-  console.log(authentication);
+  const redirect = redirectTo({ role: rest.role, userRole: role });
 
   return (
     <Route
       {...rest}
       render={({ location }) =>
         authentication ? (
-          children
+          redirect ? (
+            <Redirect
+              to={{
+                pathname: redirect,
+                state: { from: location },
+              }}
+            />
+          ) : (
+            children
+          )
         ) : (
           <Redirect
             to={{

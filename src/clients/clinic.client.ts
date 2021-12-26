@@ -1,4 +1,5 @@
 import * as axios from "axios";
+import { ApplicationUser } from "../types/application-user";
 import { UserData } from "../types/user-data";
 import { UserDiagnose } from "../types/user-diagnose";
 
@@ -110,11 +111,15 @@ export class ClinicClient {
     }
   }
 
-  async getUserData(): Promise<Return<undefined, UserData | undefined>> {
+  async getUserData(
+    userName?: string
+  ): Promise<Return<undefined, UserData | undefined>> {
     try {
-      const res = await this.instance.get<UserData>("UserData/");
+      const res = await this.instance.get(
+        userName ? `UserData/${userName}` : "UserData/"
+      );
 
-      return { content: res.data };
+      return res.data;
     } catch (e) {
       const error = e as axios.AxiosError;
 
@@ -130,13 +135,15 @@ export class ClinicClient {
     await this.instance.post<UserData>("UserData/", userData);
   }
 
-  async getUserDiagnose(): Promise<
-    Return<undefined, UserDiagnose | undefined>
-  > {
+  async getUserDiagnose(
+    userName?: string
+  ): Promise<Return<undefined, UserDiagnose | undefined>> {
     try {
-      const res = await this.instance.get<UserDiagnose>("UserDiagnose/");
+      const res = await this.instance.get(
+        userName ? `UserDiagnose/${userName}` : "UserDiagnose/"
+      );
 
-      return { content: res.data };
+      return res.data;
     } catch (e) {
       const error = e as axios.AxiosError;
 
@@ -146,5 +153,10 @@ export class ClinicClient {
 
       throw error;
     }
+  }
+
+  async getApplicationUsers(): Promise<Return<undefined, ApplicationUser[]>> {
+    const res = await this.instance.get("ApplicationUser/");
+    return res.data;
   }
 }

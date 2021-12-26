@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { Role } from "../types/role";
 import { decode } from "jsonwebtoken";
 
-const AuthenticateContext = React.createContext<undefined | string>(undefined);
+const AuthenticateContext = React.createContext<string | undefined>(undefined);
 const UpdateAuthenticateContext = React.createContext(undefined as any);
-const RoleContext = React.createContext<Role>(Role.USER);
+const RoleContext = React.createContext<Role | undefined>(undefined);
 
 export function useAuthentication() {
   return useContext(AuthenticateContext);
@@ -23,7 +23,7 @@ export function AuthenticateProvider({ children }: { children: any }) {
     string | undefined
   >(undefined);
 
-  const [roleContext, setRoleContext] = useState<Role>(Role.USER);
+  const [roleContext, setRoleContext] = useState<Role | undefined>(undefined);
 
   useEffect(() => {
     localStorage.setItem("authentication", authenticateContext || "");
@@ -31,6 +31,8 @@ export function AuthenticateProvider({ children }: { children: any }) {
     if (authenticateContext) {
       const decoded = decode(authenticateContext) as { role: Role };
       setRoleContext(decoded.role);
+    } else {
+      setRoleContext(undefined);
     }
   }, [authenticateContext]);
 

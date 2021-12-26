@@ -1,0 +1,14 @@
+.UserDetails {
+  display: flex;
+  width: 80%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.Box {
+  display: flex;
+  justify-content: space-around;
+}
+
+.Column {
+}

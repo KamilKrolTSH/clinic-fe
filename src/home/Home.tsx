@@ -4,15 +4,33 @@ import Button from "@mui/material/Button";
 
 export function Home() {
   return (
-    <div>
-      <Link className="link" to="/login">
-        <Button variant="contained">Login</Button>
+    <div className="Home">
+      <Link
+        style={{ width: "200px", marginBottom: "20px" }}
+        className="link"
+        to="/login"
+      >
+        <Button style={{ width: "200px" }} variant="contained">
+          Login
+        </Button>
       </Link>
-      <Link className="link" to="/register">
-        <Button variant="contained">Register</Button>
+      <Link
+        style={{ width: "200px", marginBottom: "20px" }}
+        className="link"
+        to="/register"
+      >
+        <Button style={{ width: "200px" }} variant="contained">
+          Register
+        </Button>
       </Link>
-      <Link className="link" to="/register-admin">
-        <Button variant="contained">Register Admin</Button>
+      <Link
+        style={{ width: "200px", marginBottom: "20px" }}
+        className="link"
+        to="/register-admin"
+      >
+        <Button style={{ width: "200px" }} variant="contained">
+          Register Admin
+        </Button>
       </Link>
     </div>
   );

@@ -107,6 +107,7 @@ export function Dashboard() {
       insulin: parseFloat(insulin),
       bmi: parseFloat(bmi),
       age: parseInt(age),
+      skinThickness: parseFloat(skinThickness),
     });
     await init();
   };

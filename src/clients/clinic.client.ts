@@ -159,4 +159,11 @@ export class ClinicClient {
     const res = await this.instance.get("ApplicationUser/");
     return res.data;
   }
+
+  async getUserDiagnoseSimulation(
+    userName: string
+  ): Promise<Return<undefined, boolean>> {
+    const res = await this.instance.get(`UserDiagnose/simulate/${userName}`);
+    return res.data;
+  }
 }

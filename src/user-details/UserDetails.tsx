@@ -43,10 +43,11 @@ export function UserDetails() {
     );
   };
 
-  const onSubmitClick = () => {
+  const onSubmitClick = async () => {
     setLoading(true);
 
-    // send request for diagnose
+    const userDiagnose = await clinicClient.getUserDiagnoseSimulation(userName);
+    console.log(userDiagnose);
 
     init();
   };

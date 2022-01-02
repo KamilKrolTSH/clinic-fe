@@ -45,15 +45,15 @@ export function Dashboard() {
   const [skinThickness, setSkinThickness] = useState<string>("");
 
   const onPregnancesChange = makeOnNaturalNumberXChange(setPregnancies);
-  const onGlucoseChange = makeOnRealNumberXChange(setGlucose);
-  const onBloodPressureChange = makeOnRealNumberXChange(setBloodPressure);
+  const onGlucoseChange = makeOnNaturalNumberXChange(setGlucose);
+  const onBloodPressureChange = makeOnNaturalNumberXChange(setBloodPressure);
   const onDiabetesPedigreeFunctionChange = makeOnRealNumberXChange(
     setDiabetesPedigreeFunction
   );
-  const onInsulinChange = makeOnRealNumberXChange(setInsulin);
+  const onInsulinChange = makeOnNaturalNumberXChange(setInsulin);
   const onBmiChange = makeOnRealNumberXChange(setBmi);
   const onAgeChange = makeOnNaturalNumberXChange(setAge);
-  const onSkinThicknessChange = makeOnRealNumberXChange(setSkinThickness);
+  const onSkinThicknessChange = makeOnNaturalNumberXChange(setSkinThickness);
 
   const allFields = [
     glucose,

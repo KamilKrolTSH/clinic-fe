@@ -93,7 +93,9 @@ export function Dashboard() {
   const loadUserDiagnose = async () => {
     const userDiagnose = await clinicClient.getUserDiagnose();
     setUserDiagnose(
-      typeof userDiagnose.content === "boolean" ? userDiagnose.content : null
+      typeof userDiagnose.content?.value === "boolean"
+        ? userDiagnose.content.value
+        : null
     );
   };
 
@@ -213,9 +215,9 @@ export function Dashboard() {
   const diagnose = () =>
     typeof userDiagnose === "boolean" ? (
       userDiagnose ? (
-        <div>You are diabetic</div>
+        <div style={{ color: "#f44335" }}>You are diabetic</div>
       ) : (
-        <div>You are NOT diabetic</div>
+        <div style={{ color: "#90caf9" }}>You are not diabetic</div>
       )
     ) : (
       <div>You are not diagnosed yet</div>

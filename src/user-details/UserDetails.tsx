@@ -16,59 +16,117 @@ export function UserDetails() {
     undefined
   );
 
+  const [userDiagnosePrediction, setUserDiagnosePrediction] = useState<
+    boolean | undefined
+  >(undefined);
+
   useEffect(() => {
     init();
   }, []);
 
   const init = async () => {
-    await loadUserData();
-    if (userData) {
-      await loadUserDiagnose();
-    }
+    const userDataRes = await clinicClient.getUserData(userName);
+    setUserData(userDataRes.content);
+
+    const userDiagnose = await clinicClient.getUserDiagnose(userName);
+    console.log(userDiagnose);
+    setUserDiagnose(
+      typeof userDiagnose.content?.value === "boolean"
+        ? userDiagnose.content.value
+        : undefined
+    );
+    // }
 
     setLoading(false);
   };
 
-  const loadUserData = async () => {
-    const userData = await clinicClient.getUserData(userName);
-    setUserData(userData.content);
-  };
-
-  const loadUserDiagnose = async () => {
-    const userDiagnose = await clinicClient.getUserDiagnose(userName);
-    setUserDiagnose(
-      typeof userDiagnose.content === "boolean"
-        ? userDiagnose.content
-        : undefined
-    );
-  };
-
-  const onSubmitClick = async () => {
+  const onGetDiagnosePredictionClick = async () => {
     setLoading(true);
 
     const userDiagnose = await clinicClient.getUserDiagnoseSimulation(userName);
-    console.log(userDiagnose);
+    setUserDiagnosePrediction(userDiagnose.content!.value!);
 
+    init();
+  };
+
+  const makeOnSetClick = (diagnose: boolean) => async () => {
+    setLoading(true);
+    await clinicClient.setUserDiagnose({
+      userName,
+      diagnose,
+    });
     init();
   };
 
   const getUserDiagnose = () => {
     if (typeof userDiagnose === "boolean") {
       if (userDiagnose === true) {
-        return <div>Patient is diabetic</div>;
+        return (
+          <div style={{ textAlign: "center", color: "#f44335" }}>
+            Patient is diabetic
+          </div>
+        );
       }
-      return <div>Patient is not diabetic</div>;
+      return (
+        <div style={{ textAlign: "center", color: "#90caf9" }}>
+          Patient is not diabetic
+        </div>
+      );
     }
+  };
 
-    return (
-      <Button
-        style={{ maxWidth: "200px", margin: "auto" }}
-        variant="contained"
-        onClick={onSubmitClick}
-      >
-        Diagnose
-      </Button>
-    );
+  const getUserDiagnoseSimulation = () => {
+    if (typeof userDiagnose !== "boolean") {
+      if (typeof userDiagnosePrediction !== "boolean") {
+        return (
+          <Button
+            style={{ maxWidth: "300px", margin: "auto" }}
+            variant="contained"
+            onClick={onGetDiagnosePredictionClick}
+          >
+            Diagnose prediction
+          </Button>
+        );
+      }
+      return (
+        <div style={{ textAlign: "center" }}>
+          <div>
+            <p
+              style={
+                userDiagnosePrediction
+                  ? { color: "#f44335" }
+                  : { color: "#90caf9" }
+              }
+            >
+              Prediction says that customer{" "}
+              {userDiagnosePrediction ? "is diabetic" : "is not diabetic"}
+            </p>
+            <p>Final decision</p>
+          </div>
+          <div>
+            <Button
+              style={{
+                maxWidth: "200px",
+                margin: "auto",
+                marginRight: "100px",
+              }}
+              variant="contained"
+              onClick={makeOnSetClick(true)}
+              color="error"
+            >
+              Diabetic
+            </Button>
+            <Button
+              style={{ maxWidth: "200px", margin: "auto" }}
+              variant="contained"
+              onClick={makeOnSetClick(false)}
+            >
+              No Diabetic
+            </Button>
+          </div>
+        </div>
+      );
+    }
   };
 
   const getUserDetails = () => {
@@ -77,6 +135,7 @@ export function UserDetails() {
         <Typography align="center" variant="h3">
           {userName}
         </Typography>
+        {getUserDiagnoseSimulation()}
         {getUserDiagnose()}
         <div className="Box">
           <div className="Column">

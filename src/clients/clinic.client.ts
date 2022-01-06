@@ -162,8 +162,12 @@ export class ClinicClient {
 
   async getUserDiagnoseSimulation(
     userName: string
-  ): Promise<Return<undefined, boolean>> {
+  ): Promise<Return<undefined, { value: boolean }>> {
     const res = await this.instance.get(`UserDiagnose/simulate/${userName}`);
     return res.data;
+  }
+
+  async setUserDiagnose(input: { userName: string; diagnose: boolean }) {
+    await this.instance.post(`UserDiagnose`, input);
   }
 }
